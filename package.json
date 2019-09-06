@@ -17,9 +17,13 @@
 		"@types/node": "^12.7.4"
 	},
 	"dependencies": {
+		"@types/moment-timezone": "^0.5.12",
+		"chalk": "^2.4.2",
 		"cors": "^2.8.5",
 		"express": "^4.17.1",
 		"helmet": "^3.21.0",
+		"moment": "^2.24.0",
+		"moment-timezone": "^0.5.26",
 		"nodemon": "^1.19.2",
 		"pm2": "^3.5.1"
 	}
