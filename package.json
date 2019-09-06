@@ -1,0 +1,26 @@
+{
+	"name": "nem_typescript",
+	"version": "1.0.0",
+	"description": "",
+	"main": "./src/app.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "tsc && pm2 start ./pm2.json",
+		"stop": "pm2 delete ./pm2.json",
+		"build": "tsc",
+		"serve": "nodemon ./nodemon.json"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/express": "^4.17.1",
+		"@types/node": "^12.7.4"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"helmet": "^3.21.0",
+		"nodemon": "^1.19.2",
+		"pm2": "^3.5.1"
+	}
+}
