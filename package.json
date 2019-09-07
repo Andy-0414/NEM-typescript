@@ -13,10 +13,13 @@
 	"author": "",
 	"license": "ISC",
 	"devDependencies": {
+		"@types/crypto-js": "^3.1.43",
 		"@types/express": "^4.17.1",
-		"@types/node": "^12.7.4",
-		"@types/mongoose": "^5.5.17",
 		"@types/moment-timezone": "^0.5.12",
+		"@types/mongoose": "^5.5.17",
+		"@types/node": "^12.7.4",
+		"@types/passport": "^1.0.1",
+		"@types/passport-jwt": "^3.0.1",
 		"nodemon": "^1.19.2"
 	},
 	"dependencies": {
@@ -25,9 +28,12 @@
 		"dotenv": "^8.1.0",
 		"express": "^4.17.1",
 		"helmet": "^3.21.0",
+		"jwt-simple": "^0.5.6",
 		"moment": "^2.24.0",
 		"moment-timezone": "^0.5.26",
 		"mongoose": "^5.6.13",
+		"passport": "^0.4.0",
+		"passport-jwt": "^4.0.0",
 		"pm2": "^3.5.1"
 	}
 }

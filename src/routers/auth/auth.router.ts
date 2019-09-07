@@ -1,10 +1,8 @@
 import { Router, Request, Response } from "express";
-import User, { IUser } from "../../schemas/User";
+import { Login } from "./auth.controller";
 
 const router = Router();
 
-router.get("/", (req: Request, res: Response) => {
-	res.send("Hello");
-});
+router.post("/login", Login);
 
 export default router;

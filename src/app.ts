@@ -1,5 +1,6 @@
 import * as express from "express";
 import * as cors from "cors";
+import * as helmet from "helmet";
 
 import "dotenv/config";
 
@@ -16,6 +17,7 @@ app.use(express.static("public"));
 app.use(express.urlencoded());
 app.use(express.json());
 app.use(cors());
+app.use(helmet());
 
 app.use(Router);
 

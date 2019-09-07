@@ -12,8 +12,7 @@ export enum HTTPRequestCode {
 
 	INTERNAL_SERVER_ERROR = 500
 }
-
-export default {
+class SendRule {
 	/**
 	 * @description 데이터 리스폰스 규격
 	 * @param {Response} res Express Response
@@ -22,7 +21,7 @@ export default {
 	 * @param {string} message 메세지
 	 * @param {boolean} result 성공 여부
 	 */
-	response(res: Response, status: number | HTTPRequestCode, data?: any, message?: string, result: boolean = true) {
+	public response(res: Response, status: number | HTTPRequestCode, data?: any, message?: string, result: boolean = true) {
 		res.status(status)
 			.send({
 				result,
@@ -31,4 +30,5 @@ export default {
 			})
 			.end();
 	}
-};
+}
+export default new SendRule();
