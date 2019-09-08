@@ -28,6 +28,7 @@ export interface IUserSchema extends IUser, Document {
 	getUserToken(): string;
 	changePassword(data: IUserChangePassword): Promise<IUserSchema>;
 	changeInfomation(data: IUser): Promise<IUserSchema>;
+	withdrawAccount(): Promise<boolean>;
 }
 /**
  * @description User 모델에 대한 정적 메서드
@@ -41,6 +42,7 @@ export interface IUserModel extends Model<IUserSchema> {
 	getAll(): Promise<IUserSchema[]>;
 	deleteAll(): Promise<void>;
 	findByEmail(email: string): Promise<IUserSchema>;
+	checkPresentAccount(email: string): Promise<boolean>;
 }
 
 const UserSchema: Schema = new Schema({
@@ -76,7 +78,7 @@ UserSchema.methods.changePassword = function(data: IUserChangePassword): Promise
 UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
 		Object.keys(data).forEach(x => {
-			this[x] = data[x] || this[x];
+			if (x != "email" && x != "password" && x != "salt") this[x] = data[x] || this[x];
 		});
 		this.save()
 			.then((data: IUserSchema) => {
@@ -84,6 +86,9 @@ UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema
 			})
 			.catch(err => reject(err));
 	});
+};
+UserSchema.methods.withdrawAccount = function(): Promise<any> {
+	return this.remove();
 };
 
 UserSchema.statics.dataCheck = function(data: any): boolean {
@@ -167,6 +172,11 @@ UserSchema.statics.findByEmail = function(email: string): Promise<IUserSchema> {
 			})
 			.catch(err => reject(err));
 	});
+};
+UserSchema.statics.checkPresentAccount = async function(email: string): Promise<boolean> {
+	let data = await this.findOne({ email });
+	if (data) return true;
+	else return false;
 };
 UserSchema.statics.getAll = function(): Promise<IUserSchema[]> {
 	return this.find();

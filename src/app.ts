@@ -22,6 +22,11 @@ app.use(express.json());
 app.use(cors());
 app.use(helmet());
 
+app.get('/',(req,res)=>{
+    res.send("Hello World!")
+})
 app.use(Router);
 
-app.use(SendRule.autoErrorHandler())
+app.use(SendRule.autoErrorHandler());
+
+export default app;

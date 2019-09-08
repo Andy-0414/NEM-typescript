@@ -2,16 +2,18 @@ import * as mongoose from "mongoose";
 import Log from "./Logger";
 class DB {
 	private isDatabaseConnect: boolean = false;
+	private db: mongoose.Connection;
 	/**
 	 * @description MongoDB 활성화
 	 * @param {string}url MongoDB URL
 	 */
 	public init(url?: string): void {
-		mongoose.connection.on("error", () => {
+		this.db = mongoose.connection;
+		this.db.on("error", () => {
 			Log.e("MongoDB Connect Fail");
 			this.isDatabaseConnect = false;
 		});
-		mongoose.connection.once("open", () => {
+		this.db.once("open", () => {
 			Log.c("MongoDB Connect Success");
 			this.isDatabaseConnect = true;
 		});
@@ -20,6 +22,9 @@ class DB {
 	}
 	public isDBConnect(): boolean {
 		return this.isDatabaseConnect;
+	}
+	public getDB(): mongoose.Connection {
+		return this.db;
 	}
 }
 export default new DB();
