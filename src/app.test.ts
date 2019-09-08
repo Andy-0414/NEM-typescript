@@ -1,6 +1,5 @@
 import * as request from "supertest";
 import app from "./app";
-import DB from "./modules/MongoDB-Helper";
 describe("DB CONNECT", function() {
 	describe("GET /", () => {
 		it("SERVER_ON", done => {

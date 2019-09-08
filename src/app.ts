@@ -8,6 +8,7 @@ import DB from "./modules/MongoDB-Helper";
 import Log from "./modules/Logger";
 import SendRule, { HTTPRequestCode } from "./modules/Send-Rule";
 import Router from "./routers/index";
+import PassportJWTAuth from "./modules/PassportJWT-Auth";
 
 const app: express.Application = express();
 app.listen(process.env.PORT || 3000, () => {
@@ -21,10 +22,11 @@ app.use(express.urlencoded());
 app.use(express.json());
 app.use(cors());
 app.use(helmet());
+app.use(PassportJWTAuth.getInitialize());
 
-app.get('/',(req,res)=>{
-    res.send("Hello World!")
-})
+app.get("/", (req, res) => {
+	res.send("Hello World!");
+}); // TEST CODE
 app.use(Router);
 
 app.use(SendRule.autoErrorHandler());
