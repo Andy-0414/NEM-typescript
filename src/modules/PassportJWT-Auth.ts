@@ -5,12 +5,11 @@ import { StrategyOptions, Strategy, ExtractJwt } from "passport-jwt";
 
 import User, { IUser } from "../schemas/User";
 
-var option: StrategyOptions = {
-	jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-	secretOrKey: process.env.SECRET_KEY || "SECRET"
-};
 class PassportJWTManager {
-	private option: StrategyOptions;
+	private option: StrategyOptions = {
+		jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+		secretOrKey: process.env.SECRET_KEY || "SECRET"
+	};
 	private initialize: Handler;
 
 	constructor() {

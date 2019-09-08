@@ -10,6 +10,9 @@ import SendRule, { HTTPRequestCode } from "./modules/Send-Rule";
 import Router from "./routers/index";
 
 const app: express.Application = express();
+app.listen(process.env.PORT || 3000, () => {
+	Log.c("CLEAR");
+});
 
 DB.init();
 
@@ -21,10 +24,4 @@ app.use(helmet());
 
 app.use(Router);
 
-app.get("/", (req: express.Request, res: express.Response) => {
-	SendRule.response(res, HTTPRequestCode.OK);
-});
-
-app.listen(3000, () => {
-	Log.c("CLEAR");
-});
+app.use(SendRule.autoErrorHandler())

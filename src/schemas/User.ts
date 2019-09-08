@@ -1,6 +1,7 @@
 import { Document, Schema, Model, model, mongo } from "mongoose";
 import * as crypto from "crypto";
 import * as jwt from "jwt-simple";
+import { StatusError, HTTPRequestCode } from "../modules/Send-Rule";
 
 /**
  * @description User 요구 데이터 \\
@@ -47,10 +48,10 @@ UserSchema.statics.loginValidation = function(data: IUser, first: boolean = fals
 				if (user) {
 					crypto.pbkdf2(data.password, user.salt, 10000, 64, "sha512", (err, key) => {
 						if (err) reject(err);
-						if (key.toString("base64") == user.password || (data.password == user.password && first)) {
+						if (key.toString("base64") == user.password || (data.password == user.password && !first)) {
 							resolve(user);
 						} else {
-							reject(new Error("비밀번호가 일치하지 않습니다."));
+							reject(new StatusError(HTTPRequestCode.FORBIDDEN, "비밀번호가 일치하지 않습니다."));
 						}
 					});
 				} else {
