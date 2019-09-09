@@ -3,7 +3,7 @@ const nodeExternals = require("webpack-node-externals");
 
 module.exports = {
 	entry: "./src/app.ts",
-	mode: "development",
+	mode: "production", // development
 	module: {
 		rules: [
 			{
