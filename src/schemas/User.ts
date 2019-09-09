@@ -29,6 +29,7 @@ export interface IUserSchema extends IUser, Document {
 	changePassword(data: IUserChangePassword): Promise<IUserSchema>;
 	changeInfomation(data: IUser): Promise<IUserSchema>;
 	withdrawAccount(): Promise<boolean>;
+	updateLoginTime(): Promise<IUserSchema>;
 }
 /**
  * @description User 모델에 대한 정적 메서드
@@ -90,6 +91,10 @@ UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema
 UserSchema.methods.withdrawAccount = function(): Promise<any> {
 	return this.remove();
 };
+UserSchema.methods.updateLoginTime = function(): Promise<IUserSchema> {
+	this.lastLogin = new Date();
+	return this.save();
+};
 
 UserSchema.statics.dataCheck = function(data: any): boolean {
 	return "email" in data && "password" in data;
@@ -98,22 +103,26 @@ UserSchema.statics.loginValidation = function(data: IUser, first: boolean = fals
 	return new Promise<IUserSchema>((resolve, reject) => {
 		this.findByEmail(data.email)
 			.then((user: IUserSchema) => {
-				if (first) {
-					crypto.pbkdf2(data.password, user.salt, 10000, 64, "sha512", (err, key) => {
-						if (err) reject(err);
-						if (key.toString("base64") == user.password) {
-							resolve(user);
+				user.updateLoginTime()
+					.then(user => {
+						if (first) {
+							crypto.pbkdf2(data.password, user.salt, 10000, 64, "sha512", (err, key) => {
+								if (err) reject(err);
+								if (key.toString("base64") == user.password) {
+									resolve(user);
+								} else {
+									reject(new StatusError(HTTPRequestCode.FORBIDDEN, "비밀번호가 일치하지 않습니다."));
+								}
+							});
 						} else {
-							reject(new StatusError(HTTPRequestCode.FORBIDDEN, "비밀번호가 일치하지 않습니다."));
+							if (data.password == user.password) {
+								resolve(user);
+							} else {
+								reject(new StatusError(HTTPRequestCode.FORBIDDEN, "비밀번호가 일치하지 않습니다."));
+							}
 						}
-					});
-				} else {
-					if (data.password == user.password) {
-						resolve(user);
-					} else {
-						reject(new StatusError(HTTPRequestCode.FORBIDDEN, "비밀번호가 일치하지 않습니다."));
-					}
-				}
+					})
+					.catch(err => reject(err));
 			})
 			.catch(err => reject(err));
 	});
