@@ -25,7 +25,7 @@ app.use(helmet());
 app.use(PassportJWTAuth.getInitialize());
 
 app.get("/", (req, res) => {
-	res.send("Hello World!");
+	res.sendfile(__dirname+"/public/index.html");
 }); // TEST CODE
 app.use(Router);
 
