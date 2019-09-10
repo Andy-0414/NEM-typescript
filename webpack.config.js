@@ -24,5 +24,8 @@ module.exports = {
 		filename: "app.js",
 		path: path.resolve(__dirname, "dist")
 	},
-	plugins: [new CopyPlugin([{ from: "./public", to: "public", context: "src/" }])]
+    plugins: [new CopyPlugin([{ from: "./public", to: "public", context: "src/" }])],
+    node:{
+        __dirname: false
+    }
 };
