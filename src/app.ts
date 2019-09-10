@@ -1,6 +1,7 @@
 import * as express from "express";
 import * as cors from "cors";
 import * as helmet from "helmet";
+import * as path from "path";
 
 import "dotenv/config";
 
@@ -25,7 +26,7 @@ app.use(helmet());
 app.use(PassportJWTAuth.getInitialize());
 
 app.get("/", (req, res) => {
-	res.sendfile(__dirname+"/public/index.html");
+	res.sendfile("public/index.html");
 }); // TEST CODE
 app.use(Router);
 
