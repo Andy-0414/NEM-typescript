@@ -20,9 +20,17 @@ class DB {
 		mongoose.set("useCreateIndex", true);
 		mongoose.connect(url || process.env.DB_URL || "mongodb://localhost/NEM-TEMPLATE", { useNewUrlParser: true });
 	}
+	/**
+	 * @description DB 연결 여부 확인
+	 * @returns {boolean} DB 연결 여부
+	 */
 	public isDBConnect(): boolean {
 		return this.isDatabaseConnect;
 	}
+	/**
+	 * @description DB 객체 반환
+	 * @returns {mongoose.Connection} DB 객체
+	 */
 	public getDB(): mongoose.Connection {
 		return this.db;
 	}

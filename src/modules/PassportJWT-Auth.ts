@@ -26,15 +26,27 @@ class PassportJWTManager {
 		);
 		this.initialize = passport.initialize();
 	}
+	/**
+	 * @description passport 사용을 위한 기본 세팅 미들웨어를 제공합니다.
+	 * @returns {Handler} passport 기본 세팅 미들웨어
+	 */
 	public getInitialize(): Handler {
 		return this.initialize;
 	}
+	/**
+	 * @description Authorization 헤더 안의 Bearer 토큰를 이용하여(기본값) 로그인 후 유저에 대한 정보를 req.user 에 저장합니다. 로그인 실패 시 401을 반환합니다.
+	 * @returns {Handler}
+	 */
 	public authenticate(): Handler {
 		return passport.authenticate("jwt", {
 			failWithError: true,
 			session: false
 		});
 	}
+	/**
+	 * @description passport 세팅을 설정합니다.
+	 * @param {StrategyOptions}option
+	 */
 	public setOption(option: StrategyOptions): void {
 		this.option = option;
 	}

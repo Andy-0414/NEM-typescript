@@ -40,6 +40,11 @@ class SendRule {
 			})
 			.end();
 	}
+	/**
+	 * @description 에러 코드를 문자열로 바꾸어 반환합니다.
+	 * @param {HTTPRequestCode} status 에러 코드
+	 * @returns {string} 에러 문자
+	 */
 	public HTTPRequestCodeToMessage(status: HTTPRequestCode): string {
 		switch (status) {
 			case HTTPRequestCode.OK:
@@ -62,6 +67,10 @@ class SendRule {
 				return null;
 		}
 	}
+	/**
+	 * @description 자동으로 에러를 핸들링 해 주는 미들웨어를 반환합니다.
+	 * @returns {ErrorHandleFunction} 에러 핸들러
+	 */
 	public autoErrorHandler(): ErrorHandleFunction {
 		return (err: StatusError, req: Request, res: Response, next: NextFunction) => {
 			err.status = err.status || 500;
