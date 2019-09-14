@@ -1,5 +1,17 @@
 # NEM-TYPESCRIPT
 - Node.js + Express + MongoDB + Typescript 를 사용하여 서버 탬플릿을 제작했습니다.
+## npm
+- ```npm test``` 테스트 케이스 실행
+- ```npm start``` webpack으로 빌드 후 pm2로 실행
+- ```npm stop``` pm2로 실행한 서버 중지
+- ```npm build``` webpack으로 빌드
+- ```npm serve``` 개발 시 핫 리로드 서버
+
+## .env
+```
+DB_URL=mongodb://localhost/YOUR_MONGODB_URL
+SECRET_KEY=YOUR_SECRET_KEY
+```
 ## Routers
 - /auth/register
 ```

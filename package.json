@@ -5,7 +5,7 @@
 	"main": "./src/app.ts",
 	"scripts": {
 		"test": "mocha --timeout 10000 -r ts-node/register 'src/**/*.test.ts'",
-		"start": "webpack --config webpack.config.js && pm2 start ./pm2.json",
+		"start": "npm run build && pm2 start ./pm2.json",
 		"stop": "pm2 delete ./pm2.json",
 		"build": "webpack --config webpack.config.js",
 		"serve": "nodemon ../nodemon.json"
