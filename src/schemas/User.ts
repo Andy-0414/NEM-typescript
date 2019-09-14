@@ -13,7 +13,7 @@ export interface PasswordAndSalt {
 export interface IUser {
 	email: string;
 	password: string;
-	nickname: string;
+	nickname?: string;
 	lastLogin?: Date;
 	createAt?: Date;
 	salt?: string;
@@ -22,34 +22,99 @@ export interface IUserChangePassword extends IUser {
 	newPassword: string;
 }
 /**
- * @description User 스키마에 대한 메서드
+ * @description User 스키마에 대한 메서드 ( 레코드 )
  */
 export interface IUserSchema extends IUser, Document {
+	/**
+	 * @description 이 유저에 대한 토큰을 생성합니다.
+	 * @returns {string} 이 유저에 대한 토큰을 반홚바니다.
+	 */
 	getUserToken(): string;
+	/**
+	 * @description 이 유저의 비밀번호를 변경합니다.
+	 * @param {IUserSchema}data newPassword 필드에 바꿀 비밀번호를 입력
+	 * @returns {Promise<IUserSchema>} 작업이 완료 된 후 그 유저를 반환합니다.
+	 */
 	changePassword(data: IUserChangePassword): Promise<IUserSchema>;
+	/**
+	 * @description 이 유저의 정보를 반환합니다.
+	 * @param {IUser}data 유저의 바꿀 정보
+	 * @returns {Promise<IUserSchema>} 작업이 완료된 후 그 유저를 반환합니다.
+	 */
 	changeInfomation(data: IUser): Promise<IUserSchema>;
+	/**
+	 * @description 이 유저의 계정을 삭제합니다.
+	 * @returns {Promise<boolean>} 성공 여부를 반환합니다.
+	 */
 	withdrawAccount(): Promise<boolean>;
+	/**
+	 * @description 로그인 시간을 갱신합니다.
+	 * @returns {Promise<IUserSchema>} 작업이 완료 된 후 그 유저를 반환합니다.
+	 */
 	updateLoginTime(): Promise<IUserSchema>;
 }
 /**
- * @description User 모델에 대한 정적 메서드
+ * @description User 모델에 대한 정적 메서드 ( 테이블 )
  */
 export interface IUserModel extends Model<IUserSchema> {
+	/**
+	 * @description email과 password 필드의 유효성을 검사합니다.
+	 * @param {any}data 체크 할 객체
+	 * @returns {boolean} 유효성 결과
+	 */
 	dataCheck(data: any): boolean;
+	/**
+	 * @description 유저가 로그인이 가능한지 확인합니다.
+	 * @param data 유효성 검사 유저
+	 * @param {boolean}first 최초 로그인 시 (비밀번호가 암호화 되지 않았을 시)
+	 * @returns {Promise<IUserSchema>} 성공 시 그 유저를 반환합니다.
+	 */
 	loginValidation(data: IUser, first?: boolean): Promise<IUserSchema>;
+	/**
+	 * @description 입력받은 유저의 토큰을 생성합니다.
+	 * @returns {string} 입력받은 유저에 대한 토큰
+	 */
 	getToken(data: IUserSchema): string;
+	/**
+	 * @description 암호화 할 비밀번호를 입력받아 비밀번호와 암호화 키를 반환합니다.
+	 * @param {string}password 암호화 할 비밀번호
+	 * @returns {Promise<PasswordAndSalt>} 비밀번호와 암호화 키를 반환합니다.
+	 */
 	createPassword(password: string): Promise<PasswordAndSalt>;
+	/**
+	 * @description 유저를 생성한 후 그 유저를 반환합니다.
+	 * @param {IUser}data 생성할 유저 데이터
+	 * @returns {Promise<IUserSchema>} 입력받은 데이터에 대한 유저입니다.
+	 */
 	createUser(data: IUser): Promise<IUserSchema>;
+	/**
+	 * @description 모든 유저를 반환합니다.
+	 * @returns {Promise<IUserSchema[]>} 모든 유저를 반환합니다.
+	 */
 	getAll(): Promise<IUserSchema[]>;
+	/**
+	 * @description 모든 유저를 제거합니다.
+	 * @returns {Promise<void>} 모든 유저를 제거합니다.
+	 */
 	deleteAll(): Promise<void>;
+	/**
+	 * @description 이메일을 입력받아 일치하는 유저를 반환합니다.
+	 * @param {string}email 찾을 유저의 이메일
+	 * @returns {Promise<IUserSchema>} 일치하는 유저를 반환합니다.
+	 */
 	findByEmail(email: string): Promise<IUserSchema>;
+	/**
+	 * @description 이메일을 입력받아 계정의 유무를 반환합니다.
+	 * @param email 검사 할 유저의 이메일
+	 * @returns {boolean} 계정의 유무를 반환합니다.
+	 */
 	checkPresentAccount(email: string): Promise<boolean>;
 }
 
 const UserSchema: Schema = new Schema({
 	email: { type: String, required: true, unique: true },
-	nickname: { type: String, required: true },
 	password: { type: String, required: true },
+	nickname: { type: String },
 	lastLogin: { type: Date, default: Date.now },
 	createAt: { type: Date, default: Date.now },
 	salt: { type: String, default: process.env.SECRET_KEY || "SECRET" }
@@ -77,16 +142,10 @@ UserSchema.methods.changePassword = function(data: IUserChangePassword): Promise
 	});
 };
 UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema> {
-	return new Promise<IUserSchema>((resolve, reject) => {
-		Object.keys(data).forEach(x => {
-			if (x != "email" && x != "password" && x != "salt") this[x] = data[x] || this[x];
-		});
-		this.save()
-			.then((data: IUserSchema) => {
-				resolve(data);
-			})
-			.catch(err => reject(err));
+	Object.keys(data).forEach(x => {
+		if (x != "email" && x != "password" && x != "salt") this[x] = data[x] || this[x];
 	});
+	return this.save();
 };
 UserSchema.methods.withdrawAccount = function(): Promise<any> {
 	return this.remove();
