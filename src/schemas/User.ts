@@ -143,7 +143,7 @@ UserSchema.methods.changePassword = function(data: IUserChangePassword): Promise
 };
 UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema> {
 	Object.keys(data).forEach(x => {
-		if (x != "email" && x != "password" && x != "salt") this[x] = data[x] || this[x];
+		if (x in this && (x != "email" && x != "password" && x != "salt" && x != "createAt")) this[x] = data[x] || this[x];
 	});
 	return this.save();
 };

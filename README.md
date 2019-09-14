@@ -70,6 +70,19 @@ SECRET_KEY=YOUR_SECRET_KEY
         data : "USER_TOKEN"
     }
 ```
+- /auth/changeInformation
+```
+    REQ
+    HEADERS{
+        Authorization : "USER_TOKEN",
+    }
+
+    RES
+    200 OK{ // 정보 변경 성공
+        result : true,
+        message: "정보 변경 성공"
+    }
+```
 - /auth/withdrawAccount
 ```
     REQ
