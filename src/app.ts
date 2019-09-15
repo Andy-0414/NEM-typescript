@@ -19,19 +19,18 @@ app.listen(process.env.PORT || 3000, () => {
 
 DB.init();
 
-app.use(express.static(__dirname + "/public"));
-app.use(express.urlencoded());
-app.use(express.json());
-
+app.use(morgan("dev"));
 app.use(cors());
 app.use(helmet());
 app.use(compression());
-app.use(morgan("dev"));
-
 app.use(PassportJWTAuth.getInitialize());
 
-app.get("/", (req, res) => {
-	res.sendfile(__dirname + "/public/index.html");
+app.use(express.static("public"));
+app.use(express.urlencoded());
+app.use(express.json());
+
+app.get("/page", (req, res) => {
+	res.sendfile("public/page.html");
 }); // TEST CODE
 app.use(Router);
 
