@@ -1,8 +1,8 @@
 import { Router } from "express";
-
-import Auth from './auth/auth.router';
-
 const router = Router();
+
+// 여기에다 라우터 추가
+import Auth from './auth/auth.router';
 
 router.use('/auth',Auth);
 

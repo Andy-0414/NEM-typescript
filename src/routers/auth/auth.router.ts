@@ -4,6 +4,7 @@ import PassportJWTAuth from "../../modules/PassportJWT-Auth";
 
 const router = Router();
 
+// Routers
 router.post("/register", Register);
 router.post("/login", Login);
 router.post("/getProfile", PassportJWTAuth.authenticate(), GetProfile);
