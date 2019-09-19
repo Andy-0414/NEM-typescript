@@ -13,7 +13,8 @@ import Router from "./routers/index";
 import PassportJWTAuth from "./modules/PassportJWT-Auth";
 
 const app: express.Application = express(); // 서버 객체
-app.listen(process.env.PORT || 3000, () => { // 서버가 열렸을 시 콜백
+app.listen(process.env.PORT || 3000, () => {
+	// 서버가 열렸을 시 콜백
 	Log.c("SERVER OPEN");
 	Log.c(`PORT : ${process.env.PORT || 3000}`);
 });

@@ -1,0 +1,29 @@
+* {
+	padding: 0;
+	margin: 0;
+	box-sizing: border-box;
+
+	font-family: "Nanum Gothic", sans-serif;
+}
+body {
+	display: flex;
+	flex-direction: column;
+	background-color: #222222;
+}
+.top {
+	width: 100%;
+	height: 60px;
+
+	padding: 0 40px;
+
+	display: flex;
+	align-items: center;
+
+	font-size: 1.4em;
+	color: white;
+	background-color: #010d14;
+}
+.content {
+	width: 100%;
+	height: calc(100vh - 60px);
+}
