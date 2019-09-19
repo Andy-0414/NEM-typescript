@@ -11,7 +11,7 @@ import Log from "../../modules/Logger";
  */
 export const Register = (req: Request, res: Response, next: NextFunction) => {
 	let data: IUser = req.body as IUser;
-	if (User.dataCheck(data) && "nickname" in data) {
+	if (User.dataCheck(data)) {
 		User.checkPresentAccount(data.email)
 			.then(check => {
 				if (!check) {

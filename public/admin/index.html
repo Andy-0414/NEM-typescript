@@ -7,13 +7,20 @@
 		<link rel="stylesheet" href="style.css" />
 
 		<link href="https://fonts.googleapis.com/css?family=Nanum+Gothic&display=swap" rel="stylesheet" />
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
 		<title>ADMIN</title>
 	</head>
 	<body>
 		<h1 class="top">ADMIN</h1>
 		<div class="content">
-            <div class="login"></div>
-        </div>
+			<div class="login">
+				<h2>Admin Page Login</h2>
+				<input type="text" id="email" placeholder="email" />
+				<input type="password" id="password" placeholder="password" />
+				<button onclick="login()">ENTER</button>
+			</div>
+		</div>
+		<script src="script.js"></script>
 	</body>
 </html>
