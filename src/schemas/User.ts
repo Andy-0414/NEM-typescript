@@ -1,4 +1,4 @@
-import { Document, Schema, Model, model, mongo, Mongoose } from "mongoose";
+import { Document, Schema, Model, model, DocumentQuery } from "mongoose";
 import * as crypto from "crypto";
 import * as jwt from "jwt-simple";
 import { StatusError, HTTPRequestCode } from "../modules/Send-Rule";
@@ -88,16 +88,6 @@ export interface IUserModel extends Model<IUserSchema> {
 	 */
 	createUser(data: IUser): Promise<IUserSchema>;
 	/**
-	 * @description 모든 유저를 반환합니다.
-	 * @returns {Promise<IUserSchema[]>} 모든 유저를 반환합니다.
-	 */
-	getAll(): Promise<IUserSchema[]>;
-	/**
-	 * @description 모든 유저를 제거합니다.
-	 * @returns {Promise<void>} 모든 유저를 제거합니다.
-	 */
-	deleteAll(): Promise<void>;
-	/**
 	 * @description 이메일을 입력받아 일치하는 유저를 반환합니다.
 	 * @param {string}email 찾을 유저의 이메일
 	 * @returns {Promise<IUserSchema>} 일치하는 유저를 반환합니다.
@@ -119,15 +109,12 @@ const UserSchema: Schema = new Schema({
 	createAt: { type: Date, default: Date.now },
 	salt: { type: String, default: process.env.SECRET_KEY || "SECRET" }
 });
-UserSchema.methods.getUserToken = function(): string {
-	return this.constructor.getToken({
-		email: this.email,
-		password: this.password
-	});
+UserSchema.methods.getUserToken = function(this: IUserSchema): string {
+	return (this.constructor as IUserModel).getToken(this);
 };
-UserSchema.methods.changePassword = function(data: IUserChangePassword): Promise<IUserSchema> {
+UserSchema.methods.changePassword = function(this: IUserSchema, data: IUserChangePassword): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
-		this.constructor
+		(this.constructor as IUserModel)
 			.createPassword(data.newPassword)
 			.then((passsalt: PasswordAndSalt) => {
 				this.password = passsalt.password;
@@ -141,24 +128,29 @@ UserSchema.methods.changePassword = function(data: IUserChangePassword): Promise
 			.catch(err => reject(err));
 	});
 };
-UserSchema.methods.changeInfomation = function(data: IUser): Promise<IUserSchema> {
+UserSchema.methods.changeInfomation = function(this: IUserSchema, data: IUser): Promise<IUserSchema> {
 	Object.keys(data).forEach(x => {
-		if (x in this && (x != "email" && x != "password" && x != "salt" && x != "createAt")) this[x] = data[x] || this[x];
+		if (x in this && (x != "email" && x != "password" && x != "salt" && x != "createAt"))
+			this[x] = data[x] || this[x];
 	});
 	return this.save();
 };
-UserSchema.methods.withdrawAccount = function(): Promise<any> {
+UserSchema.methods.withdrawAccount = function(this: IUserSchema): Promise<any> {
 	return this.remove();
 };
-UserSchema.methods.updateLoginTime = function(): Promise<IUserSchema> {
+UserSchema.methods.updateLoginTime = function(this: IUserSchema): Promise<IUserSchema> {
 	this.lastLogin = new Date();
 	return this.save();
 };
 
-UserSchema.statics.dataCheck = function(data: any): boolean {
+UserSchema.statics.dataCheck = function(this: IUserModel, data: any): boolean {
 	return "email" in data && "password" in data;
 };
-UserSchema.statics.loginValidation = function(data: IUser, first: boolean = false): Promise<IUserSchema> {
+UserSchema.statics.loginValidation = function(
+	this: IUserModel,
+	data: IUser,
+	first: boolean = false
+): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
 		this.findByEmail(data.email)
 			.then((user: IUserSchema) => {
@@ -186,15 +178,15 @@ UserSchema.statics.loginValidation = function(data: IUser, first: boolean = fals
 			.catch(err => reject(err));
 	});
 };
-
-UserSchema.statics.getToken = function(data: IUserSchema): string {
+type EMPW = { email: string; password: string };
+UserSchema.statics.getToken = function(this: IUserModel, data: IUser): string {
 	let user = {
 		email: data.email,
 		password: data.password
 	};
 	return "Bearer " + jwt.encode(user, process.env.SECRET_KEY || "SECRET");
 };
-UserSchema.statics.createPassword = function(password: string): Promise<PasswordAndSalt> {
+UserSchema.statics.createPassword = function(this: IUserModel, password: string): Promise<PasswordAndSalt> {
 	let data: PasswordAndSalt = {
 		password: "",
 		salt: ""
@@ -212,7 +204,7 @@ UserSchema.statics.createPassword = function(password: string): Promise<Password
 		});
 	});
 };
-UserSchema.statics.createUser = function(data: IUser): Promise<IUserSchema> {
+UserSchema.statics.createUser = function(this: IUserModel, data: IUser): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
 		this.createPassword(data.password)
 			.then((passsalt: PasswordAndSalt) => {
@@ -228,7 +220,7 @@ UserSchema.statics.createUser = function(data: IUser): Promise<IUserSchema> {
 			.catch(err => reject(err));
 	});
 };
-UserSchema.statics.findByEmail = function(email: string): Promise<IUserSchema> {
+UserSchema.statics.findByEmail = function(this: IUserModel, email: string): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
 		this.findOne({ email })
 			.then((data: IUserSchema) => {
@@ -241,15 +233,9 @@ UserSchema.statics.findByEmail = function(email: string): Promise<IUserSchema> {
 			.catch(err => reject(err));
 	});
 };
-UserSchema.statics.checkPresentAccount = async function(email: string): Promise<boolean> {
+UserSchema.statics.checkPresentAccount = async function(this: IUserModel, email: string): Promise<boolean> {
 	let data = await this.findOne({ email });
 	if (data) return true;
 	else return false;
-};
-UserSchema.statics.getAll = function(): Promise<IUserSchema[]> {
-	return this.find();
-};
-UserSchema.statics.deleteAll = function(): Promise<void> {
-	return this.deleteMany();
 };
 export default model<IUserSchema>("User", UserSchema) as IUserModel;
