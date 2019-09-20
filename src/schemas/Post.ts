@@ -17,6 +17,7 @@ export interface IPost {
 export interface IPostSchema extends IPost, Document {
 	removePost(): Promise<any>;
 	changeInfomation(data: IPost): Promise<IPostSchema>;
+	ownerCheck(owner: IUserSchema): boolean;
 }
 /**
  * @description Post 모델에 대한 정적 메서드 ( 테이블 )
@@ -24,6 +25,7 @@ export interface IPostSchema extends IPost, Document {
 export interface IPostModel extends Model<IPostSchema> {
 	dataCheck(data: any): boolean;
 	createPost(owner: IUserSchema, data: IPost): Promise<IPostSchema>;
+	findByID(id: ObjectID): Promise<IPostSchema>;
 	findByOwner(owner: IUserSchema): Promise<IPostSchema[]>;
 }
 
@@ -39,9 +41,12 @@ PostSchema.methods.removePost = function(this: IPostSchema): Promise<any> {
 };
 PostSchema.methods.changeInfomation = function(this: IPostSchema, data: IPost): Promise<IPostSchema> {
 	Object.keys(data).forEach(x => {
-		if (x in this && (x != "owner" && x != "createAt")) this[x] = data[x] || this[x];
+		if (x in this && (x != "owner" && x != "createAt" && x != "_id")) this[x] = data[x] || this[x];
 	});
 	return this.save();
+};
+PostSchema.methods.ownerCheck = function(this: IPostSchema, data: IUserSchema): boolean {
+	return data._id.equals(this.owner);
 };
 
 PostSchema.statics.dataCheck = function(this: IPostSchema, data: any): boolean {
@@ -52,6 +57,15 @@ PostSchema.statics.createPost = function(this: IPostModel, owner: IUserSchema, d
 	let post = new this(data);
 	return new Promise((resolve, reject) => {
 		post.save()
+			.then((data: IPostSchema) => {
+				resolve(data);
+			})
+			.catch(err => reject(err));
+	});
+};
+PostSchema.statics.findByID = function(this: IPostModel, id: ObjectID): Promise<IPostSchema> {
+	return new Promise((resolve, reject) => {
+		this.findOne({ _id: id })
 			.then((data: IPostSchema) => {
 				resolve(data);
 			})

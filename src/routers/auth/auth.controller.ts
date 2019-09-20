@@ -58,7 +58,6 @@ export const Login = (req: Request, res: Response, next: NextFunction) => {
  * @param {NextFunction}next Express next
  */
 export const GetProfile = (req: Request, res: Response) => {
-	Log.c("GetProfile : " + (req.user as IUser).email);
 	SendRule.response(res, 200, req.user);
 };
 
