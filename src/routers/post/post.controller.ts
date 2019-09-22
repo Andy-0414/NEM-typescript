@@ -3,6 +3,12 @@ import { IUserSchema } from "../../schemas/User";
 import Post, { IPost, IPostSchema } from "../../schemas/Post";
 import SendRule, { StatusError, HTTPRequestCode } from "../../modules/Send-Rule";
 
+/**
+ * @description 글쓰기 라우터입니다.
+ * @param {Request}req Express req
+ * @param {Response}res Express res
+ * @param {NextFunction}next Express next
+ */
 export const Write = function(req: Request, res: Response, next: NextFunction) {
 	let user = req.user as IUserSchema;
 	let data = req.body as IPost;
@@ -16,6 +22,12 @@ export const Write = function(req: Request, res: Response, next: NextFunction) {
 		next(new StatusError(HTTPRequestCode.BAD_REQUEST, "잘못된 요청"));
 	}
 };
+/**
+ * @description 내 글을 반환하는 라우터입니다.
+ * @param {Request}req Express req
+ * @param {Response}res Express res
+ * @param {NextFunction}next Express next
+ */
 export const GetMyPosts = function(req: Request, res: Response, next: NextFunction) {
 	let user = req.user as IUserSchema;
 	Post.findByOwner(user)
@@ -24,7 +36,12 @@ export const GetMyPosts = function(req: Request, res: Response, next: NextFuncti
 		})
 		.catch(err => next(err));
 };
-
+/**
+ * @description 글수정 라우터입니다.
+ * @param {Request}req Express req
+ * @param {Response}res Express res
+ * @param {NextFunction}next Express next
+ */
 export const Modification = function(req: Request, res: Response, next: NextFunction) {
 	let user = req.user as IUserSchema;
 	let data = req.body;
@@ -44,6 +61,12 @@ export const Modification = function(req: Request, res: Response, next: NextFunc
 		next(new StatusError(HTTPRequestCode.BAD_REQUEST, "잘못된 요청"));
 	}
 };
+/**
+ * @description 글삭제 라우터입니다.
+ * @param {Request}req Express req
+ * @param {Response}res Express res
+ * @param {NextFunction}next Express next
+ */
 export const Delete = function(req: Request, res: Response, next: NextFunction) {
 	let user = req.user as IUserSchema;
 	let data = req.body;
