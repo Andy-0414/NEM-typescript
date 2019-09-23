@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import User, { IUser, IUserSchema, IUserChangePassword } from "../../schemas/User";
 import SendRule, { HTTPRequestCode, StatusError } from "../../modules/Send-Rule";
-import Log from "../../modules/Logger";
 
 /**
  * @description 회원가입 라우터입니다.

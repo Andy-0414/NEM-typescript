@@ -95,11 +95,16 @@ export const Delete = function(req: Request, res: Response, next: NextFunction) 
 		Post.findByID(data._id).then(post => {
 			if (post.ownerCheck(user)) {
 				post.removePost()
-					.then(post => {
-						fs.unlink(`public/${post.imgPath}`, err => {
-							if (err) next(err);
+					.then((post:IPostSchema) => {
+                        if(post.imgPath){
+                            fs.unlink(`public/${post.imgPath}`, err => {
+                                if (err) next(err);
+                                SendRule.response(res, 200, post, "글 제거 성공");
+                            });
+                        }
+                        else{
 							SendRule.response(res, 200, post, "글 제거 성공");
-						});
+                        }
 					})
 					.catch(err => next(err));
 			} else {
