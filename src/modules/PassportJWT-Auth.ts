@@ -1,5 +1,4 @@
 import * as passport from "passport";
-import * as crypto from "crypto";
 import { Handler } from "express";
 import { StrategyOptions, Strategy, ExtractJwt } from "passport-jwt";
 

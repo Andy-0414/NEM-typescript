@@ -1,4 +1,4 @@
-import { Response, Request, NextFunction, Handler } from "express";
+import { Response, Request, NextFunction } from "express";
 import Log from "./Logger";
 import { ErrorHandleFunction } from "connect";
 

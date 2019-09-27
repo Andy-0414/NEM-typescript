@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import User, { IUser, IUserSchema, IUserChangePassword } from "../../schemas/User";
 import SendRule, { HTTPRequestCode, StatusError } from "../../modules/Send-Rule";
+import * as fs from "fs";
 
 /**
  * @description 회원가입 라우터입니다.
@@ -110,4 +111,34 @@ export const WithdrawAccount = (req: Request, res: Response, next: NextFunction)
 			SendRule.response(res, HTTPRequestCode.OK, undefined, "계정 삭제 성공");
 		})
 		.catch(err => next(err));
+};
+
+/**
+ * @description 프로필 사진 수정 라우터입니다.
+ * @param {Request}req Express req
+ * @param {Response}res Express res
+ * @param {NextFunction}next Express next
+ */
+export const ChangeProfileImage = (req: Request, res: Response, next: NextFunction) => {
+	let user: IUserSchema = req.user as IUserSchema;
+	let imageData = req.body.img as string; // img
+	if (imageData) {
+		if (user.imgPath != "") {
+			try {
+				fs.unlinkSync(`public/${user.imgPath}`);
+			} catch {}
+		}
+		let imageBuffer = Buffer.from(imageData, "base64");
+		user.imgPath = `user/${user._id}.jpg`;
+		fs.writeFile(`public/${user.imgPath}`, imageBuffer, err => {
+			if (err) next(err);
+			user.save()
+				.then(user => {
+					SendRule.response(res, HTTPRequestCode.CREATE, user, "프로필 사진 수정 성공");
+				})
+				.catch(err => next(err));
+		});
+	} else {
+		next(new StatusError(HTTPRequestCode.BAD_REQUEST, "잘못된 요청"));
+	}
 };

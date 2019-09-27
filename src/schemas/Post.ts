@@ -2,6 +2,11 @@ import { Document, Schema, Model, model } from "mongoose";
 import { ObjectID } from "bson";
 import { IUserSchema } from "./User";
 
+import * as moment from "moment";
+import "moment-timezone";
+moment.tz.setDefault("Asia/Seoul");
+moment.locale("ko");
+
 /**
  * @description Post 요구 데이터
  */
@@ -30,9 +35,14 @@ export interface IPostSchema extends IPost, Document {
 	/**
 	 * @description 이 글의 주인인지 아닌지를 판단합니다
 	 * @param owner 비교할 주인
-	 * @returns {boolean} 주인 여부를 반환합니다
+	 * @returns {boolean} 주인 여부를 반환합니다.
 	 */
 	ownerCheck(owner: IUserSchema): boolean;
+	/**
+	 * @description 글이 써진 시간을 현제 시간과 계산하여 문자열로 반환합니다.
+	 * @returns {string} 글이 몇 분 전에 써졌는지 반환합니다.
+	 */
+	getLastTime(): string;
 }
 /**
  * @description Post 모델에 대한 정적 메서드 ( 테이블 )
@@ -84,12 +94,18 @@ PostSchema.methods.changeInfomation = function(this: IPostSchema, data: IPost): 
 PostSchema.methods.ownerCheck = function(this: IPostSchema, data: IUserSchema): boolean {
 	return data._id.equals(this.owner);
 };
+PostSchema.methods.getLastTime = function(this: IPostSchema): string {
+	return moment(this.createAt)
+		.startOf()
+		.fromNow();
+};
 
 PostSchema.statics.dataCheck = function(this: IPostSchema, data: any): boolean {
 	return "title" in data && "content" in data;
 };
 PostSchema.statics.createPost = function(this: IPostModel, owner: IUserSchema, data: IPost): Promise<IPostSchema> {
-	data.owner = owner._id;
+    data.owner = owner._id;
+    data.imgPath = "";
 	let post = new this(data);
 	return new Promise((resolve, reject) => {
 		post.save()
