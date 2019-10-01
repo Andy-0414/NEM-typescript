@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import User, { IUser, IUserSchema, IUserChangePassword } from "../../schemas/User";
 import SendRule, { HTTPRequestCode, StatusError } from "../../modules/Send-Rule";
 import * as fs from "fs";
+import Base64ToImage from "../../modules/Base64-To-Image";
 
 /**
  * @description 회원가입 라우터입니다.
@@ -123,14 +124,16 @@ export const ChangeProfileImage = (req: Request, res: Response, next: NextFuncti
 	let user: IUserSchema = req.user as IUserSchema;
 	let imageData = req.body.img as string; // img
 	if (imageData) {
+		let data = Base64ToImage.getImageData(imageData);
 		if (user.imgPath != "") {
 			try {
 				fs.unlinkSync(`public/${user.imgPath}`);
-			} catch {}
+			} catch (err) {
+				next(err);
+			}
 		}
-		let imageBuffer = Buffer.from(imageData, "base64");
-		user.imgPath = `user/${user._id}.jpg`;
-		fs.writeFile(`public/${user.imgPath}`, imageBuffer, err => {
+		user.imgPath = `user/${user._id}.${data.imgType}`;
+		fs.writeFile(`public/${user.imgPath}`, data.imgFile, err => {
 			if (err) next(err);
 			user.save()
 				.then(user => {

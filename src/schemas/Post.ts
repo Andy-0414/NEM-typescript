@@ -14,7 +14,7 @@ export interface IPost {
 	owner?: ObjectID;
 	title: string;
 	content: string;
-	imgPath?: string;
+	imgPath?: string[];
 	createAt?: Date;
 }
 /**
@@ -78,7 +78,7 @@ const PostSchema: Schema = new Schema({
 	owner: { type: ObjectID, required: true },
 	title: { type: String, required: true },
 	content: { type: String, required: true },
-	imgPath: { type: String },
+	imgPath: { type: Array, default: [] },
 	createAt: { type: Date, default: Date.now }
 });
 
@@ -104,8 +104,7 @@ PostSchema.statics.dataCheck = function(this: IPostSchema, data: any): boolean {
 	return "title" in data && "content" in data;
 };
 PostSchema.statics.createPost = function(this: IPostModel, owner: IUserSchema, data: IPost): Promise<IPostSchema> {
-    data.owner = owner._id;
-    data.imgPath = "";
+	data.owner = owner._id;
 	let post = new this(data);
 	return new Promise((resolve, reject) => {
 		post.save()

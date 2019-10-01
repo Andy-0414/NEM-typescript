@@ -3,6 +3,7 @@ import { IUserSchema } from "../../schemas/User";
 import Post, { IPost, IPostSchema } from "../../schemas/Post";
 import SendRule, { StatusError, HTTPRequestCode } from "../../modules/Send-Rule";
 import * as fs from "fs";
+import Base64ToImage from "../../modules/Base64-To-Image";
 
 /**
  * @description 글쓰기 라우터입니다.
@@ -13,23 +14,27 @@ import * as fs from "fs";
 export const Write = function(req: Request, res: Response, next: NextFunction) {
 	let user = req.user as IUserSchema;
 	let data = req.body as IPost;
-	let imageData = req.body.img as string; // img
+	let imageData = (req.body.img as string[]) || []; // img
 	if (Post.dataCheck(data)) {
-		if (imageData) {
+		if (imageData.length > 0) {
 			// img
-			let imageBuffer = Buffer.from(imageData, "base64");
-			delete req.body.image;
 			Post.createPost(user, data)
 				.then((post: IPostSchema) => {
-					post.imgPath = `post/${post._id}.jpg`;
-					fs.writeFile(`public/${post.imgPath}`, imageBuffer, err => {
-						if (err) next(err);
+					try {
+						imageData.forEach((x, idx) => {
+							let data = Base64ToImage.getImageData(x);
+							let path = `post/${post._id}_${idx}.${data.imgType}`;
+							fs.writeFileSync(`public/${path}`, data.imgFile);
+							post.imgPath.push(path);
+						});
 						post.save()
 							.then(post => {
 								SendRule.response(res, HTTPRequestCode.CREATE, post, "글 작성 성공");
 							})
 							.catch(err => next(err));
-					});
+					} catch (err) {
+						next(err);
+					}
 				})
 				.catch(err => next(err));
 		} else {

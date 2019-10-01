@@ -206,7 +206,6 @@ UserSchema.statics.createUser = function(this: IUserModel, data: IUser): Promise
 			.then((passsalt: PasswordAndSalt) => {
 				data.password = passsalt.password;
 				data.salt = passsalt.salt;
-				data.imgPath = "";
 				let user = new this(data);
 				user.save()
 					.then((data: IUserSchema) => {
