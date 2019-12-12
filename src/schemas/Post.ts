@@ -87,7 +87,7 @@ PostSchema.methods.removePost = function(this: IPostSchema): Promise<any> {
 };
 PostSchema.methods.changeInfomation = function(this: IPostSchema, data: IPost): Promise<IPostSchema> {
 	Object.keys(data).forEach(x => {
-		if (x in this && (x != "owner" && x != "createAt" && x != "_id")) this[x] = data[x] || this[x];
+		if (x in this && x != "owner" && x != "createAt" && x != "_id") this[x] = data[x] || this[x];
 	});
 	return this.save();
 };
