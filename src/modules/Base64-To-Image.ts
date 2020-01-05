@@ -3,6 +3,10 @@ export interface Base64Image {
 	imgType: string;
 }
 class Base64ToImage {
+	/**
+	 * @description base64를 이미지파일로 변환합니다.
+	 * @param base64
+	 */
 	getImageData(base64: string) {
 		let splitData = base64.split(",");
 		let imgType = null;

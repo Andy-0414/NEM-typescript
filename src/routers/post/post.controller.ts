@@ -16,14 +16,14 @@ export const Write = function(req: Request, res: Response, next: NextFunction) {
 	let data = req.body as IPost;
 	let imageData = (req.body.img as string[]) || []; // img
 	if (Post.dataCheck(data)) {
+		//이미지가 있을 시 처리
 		if (imageData.length > 0) {
-			// img
 			Post.createPost(user, data)
 				.then((post: IPostSchema) => {
 					try {
 						imageData.forEach((x, idx) => {
 							let data = Base64ToImage.getImageData(x);
-							let path = `post/${post._id}_${idx}.${data.imgType}`;
+							let path = `post/${post._id}_${idx}.${data.imgType}`; // public/post/post._id_idx.{jpg,png...} 에 저장함
 							fs.writeFileSync(`public/${path}`, data.imgFile);
 							post.imgPath.push(path);
 						});
@@ -38,6 +38,7 @@ export const Write = function(req: Request, res: Response, next: NextFunction) {
 				})
 				.catch(err => next(err));
 		} else {
+			//이미지가 없을 시 처리
 			Post.createPost(user, data)
 				.then((post: IPostSchema) => {
 					SendRule.response(res, HTTPRequestCode.CREATE, post, "글 작성 성공");
@@ -73,6 +74,7 @@ export const Modification = function(req: Request, res: Response, next: NextFunc
 	let data = req.body;
 	if ("_id" in data) {
 		Post.findByID(data._id).then(post => {
+			// 글의 주인인지 체크
 			if (post.ownerCheck(user)) {
 				post.changeInfomation(data)
 					.then(post => {
@@ -98,10 +100,12 @@ export const Delete = function(req: Request, res: Response, next: NextFunction) 
 	let data = req.body;
 	if ("_id" in data) {
 		Post.findByID(data._id).then(post => {
+			// 글의 주인인지 체크
 			if (post.ownerCheck(user)) {
 				post.removePost()
 					.then((post: IPostSchema) => {
 						if (post.imgPath) {
+							// 이미지가 있을 시 제거
 							fs.unlink(`public/${post.imgPath}`, err => {
 								if (err) next(err);
 								SendRule.response(res, 200, post, "글 제거 성공");

@@ -3,6 +3,9 @@ import * as crypto from "crypto";
 import * as jwt from "jwt-simple";
 import { StatusError, HTTPRequestCode } from "../modules/Send-Rule";
 
+/**
+ * @description 비밀번호 및 해시
+ */
 export interface PasswordAndSalt {
 	password: string;
 	salt: string;
@@ -19,6 +22,9 @@ export interface IUser {
 	createAt?: Date;
 	salt?: string;
 }
+/**
+ * @description User 비밀번호 변경 요구 데이터
+ */
 export interface IUserChangePassword extends IUser {
 	newPassword: string;
 }
