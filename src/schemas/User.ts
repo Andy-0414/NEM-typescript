@@ -2,6 +2,7 @@ import { Document, Schema, Model, model, DocumentQuery } from "mongoose";
 import * as crypto from "crypto";
 import * as jwt from "jwt-simple";
 import { StatusError, HTTPRequestCode } from "../modules/Send-Rule";
+import Post from "./Post";
 
 /**
  * @description 비밀번호 및 해시
@@ -138,7 +139,8 @@ UserSchema.methods.changePassword = function(this: IUserSchema, data: IUserChang
 };
 UserSchema.methods.changeInfomation = function(this: IUserSchema, data: IUser): Promise<IUserSchema> {
 	Object.keys(data).forEach(x => {
-		if (x in this && x != "email" && x != "_id" && x != "password" && x != "salt" && x != "createAt") this[x] = data[x] || this[x];
+		if (x in this && x != "email" && x != "_id" && x != "password" && x != "salt" && x != "createAt")
+			this[x] = data[x] || this[x];
 	});
 	return this.save();
 };
@@ -153,7 +155,11 @@ UserSchema.methods.updateLoginTime = function(this: IUserSchema): Promise<IUserS
 UserSchema.statics.dataCheck = function(this: IUserModel, data: any): boolean {
 	return "email" in data && "password" in data;
 };
-UserSchema.statics.loginValidation = function(this: IUserModel, data: IUser, first: boolean = false): Promise<IUserSchema> {
+UserSchema.statics.loginValidation = function(
+	this: IUserModel,
+	data: IUser,
+	first: boolean = false
+): Promise<IUserSchema> {
 	return new Promise<IUserSchema>((resolve, reject) => {
 		this.findByEmail(data.email)
 			.then((user: IUserSchema) => {
@@ -240,4 +246,9 @@ UserSchema.statics.checkPresentAccount = async function(this: IUserModel, email:
 	if (data) return true;
 	else return false;
 };
+
+UserSchema.pre("remove", function(this: IUserSchema, next) {
+	Post.remove({ owner: this._id }).exec();
+	next();
+});
 export default model<IUserSchema>("User", UserSchema) as IUserModel;

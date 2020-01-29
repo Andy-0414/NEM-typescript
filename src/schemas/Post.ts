@@ -4,6 +4,7 @@ import { IUserSchema } from "./User";
 
 import * as moment from "moment";
 import "moment-timezone";
+import Comment from "./Comment";
 moment.tz.setDefault("Asia/Seoul");
 moment.locale("ko");
 
@@ -132,5 +133,10 @@ PostSchema.statics.findByOwner = function(this: IPostModel, owner: IUserSchema):
 			.catch(err => reject(err));
 	});
 };
+
+PostSchema.pre("remove", function(this: IPostSchema, next) {
+	Comment.remove({ post: this._id }).exec();
+	next();
+});
 
 export default model<IPostSchema>("Post", PostSchema) as IPostModel;

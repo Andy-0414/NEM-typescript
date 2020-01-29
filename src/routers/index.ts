@@ -5,9 +5,11 @@ const router = Router();
 import Auth from "./auth/auth.router";
 import Admin from "./admin/admin.router";
 import Post from "./post/post.router";
+import Comment from "./comment/comment.router";
 
 router.use("/admin", Admin);
 router.use("/auth", Auth);
 router.use("/post", Post);
+router.use("/comment", Comment);
 
 export default router;
