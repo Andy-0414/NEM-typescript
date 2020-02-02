@@ -43,6 +43,7 @@ export const CommentWrite = function(req: Request, res: Response, next: NextFunc
 		.then(post => {
 			if (post) {
 				let comment = new Comment(data);
+				comment.post = post._id;
 				comment.owner = user._id;
 				comment
 					.save()
