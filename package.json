@@ -26,7 +26,7 @@
 		"@types/passport-jwt": "^3.0.1",
 		"@types/supertest": "^2.0.8",
 		"chai": "^4.2.0",
-		"mocha": "^6.2.0",
+		"mocha": "^10.2.0",
 		"nodemon": "^1.19.2",
 		"source-map-support": "^0.5.13",
 		"supertest": "^4.0.2",
