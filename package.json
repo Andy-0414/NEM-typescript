@@ -30,10 +30,10 @@
 		"nodemon": "^1.19.2",
 		"source-map-support": "^0.5.13",
 		"supertest": "^4.0.2",
-		"ts-loader": "^6.0.4",
+		"ts-loader": "^9.4.2",
 		"ts-node": "^8.3.0",
 		"typescript": "^3.6.2",
-		"webpack-cli": "^3.3.8",
+		"webpack-cli": "^5.0.1",
 		"webpack-node-externals": "^1.7.2"
 	},
 	"dependencies": {
@@ -52,6 +52,6 @@
 		"passport-jwt": "^4.0.0",
 		"path": "^0.12.7",
 		"pm2": "^3.5.1",
-		"webpack": "^4.39.3"
+		"webpack": "^5.75.0"
 	}
 }
